@@ -237,7 +237,9 @@ async function sendQuoteFromCategory(category) {
       body: quoteText,
       icon: gradient.url,
       sound: 'default',
-      group: 'daily-quotes'
+      group: 'daily-quotes',
+      action: 'none',
+      autoCopy: "1"
     };
 
     const response = await axios.post(BARK_API_URL, barkData);
