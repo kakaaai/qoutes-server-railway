@@ -16,6 +16,19 @@ async function migrateData() {
   console.log('Connected to database for migration.');
 
   try {
+    // Create table if it doesn't exist
+    const createTableQuery = `
+      CREATE TABLE IF NOT EXISTS quotes (
+          id SERIAL PRIMARY KEY,
+          quote_text TEXT NOT NULL,
+          author VARCHAR(255) NOT NULL,
+          category VARCHAR(100) NOT NULL
+      );
+      CREATE INDEX IF NOT EXISTS idx_quotes_category ON quotes (category);
+    `;
+    await client.query(createTableQuery);
+    console.log('Ensured quotes table and index exist.');
+
     // Read quotes.json
     const quotesPath = path.join(__dirname, 'quotes.json');
     if (!fs.existsSync(quotesPath)) {
