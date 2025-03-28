@@ -6,16 +6,25 @@ const dotenv = require('dotenv');
 // Load environment variables (specifically DATABASE_URL)
 dotenv.config();
 
+if (!process.env.DATABASE_URL) {
+  console.error('ERROR: DATABASE_URL environment variable is not set!');
+  process.exit(1);
+}
+
+console.log('Attempting to connect to database...');
+console.log('Database host:', new URL(process.env.DATABASE_URL).hostname);
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
 async function migrateData() {
-  const client = await pool.connect();
-  console.log('Connected to database for migration.');
-
+  console.log('Establishing database connection...');
+  let client;
   try {
+    client = await pool.connect();
+    console.log('Successfully connected to database for migration.');
     // Create table if it doesn't exist
     const createTableQuery = `
       CREATE TABLE IF NOT EXISTS quotes (
